@@ -1,0 +1,83 @@
+name: performance
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '0 6 * * 1-5' # dias úteis, 03:00 BRT
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: Perfil de carga
+        type: choice
+        options: [load, spike, stress, soak]
+        default: load
+      time_scale:
+        description: Fator de duração (1 = perfil completo)
+        default: '0.3'
+
+concurrency:
+  group: performance-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  K6_VERSION: '2.2.0'
+
+jobs:
+  quality:
+    name: Typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npm run typecheck
+
+  smoke:
+    name: Smoke (gate de PR)
+    needs: quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: grafana/setup-k6-action@v1
+        with: { k6-version: '${{ env.K6_VERSION }}' }
+      - name: Sobe a API mock
+        run: |
+          node mock-api/server.mjs &
+          npx --yes wait-on@8 http://localhost:3333/health --timeout 30000
+      - name: k6 smoke
+        run: k6 run -e PROFILE=smoke src/tests/ecommerce.test.ts
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: smoke-report, path: results/ }
+
+  load:
+    name: Carga + regressão vs baseline
+    needs: smoke
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    env:
+      PROFILE: ${{ inputs.profile || 'load' }}
+      TIME_SCALE: ${{ inputs.time_scale || '0.3' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: grafana/setup-k6-action@v1
+        with: { k6-version: '${{ env.K6_VERSION }}' }
+      - name: Sobe a API mock
+        run: |
+          node mock-api/server.mjs &
+          npx --yes wait-on@8 http://localhost:3333/health --timeout 30000
+      - name: k6 ${{ env.PROFILE }}
+        run: k6 run -e PROFILE=$PROFILE -e TIME_SCALE=$TIME_SCALE -e TEST_ID=gh-${{ github.run_id }} src/tests/ecommerce.test.ts
+      - name: Gate de regressão
+        if: env.PROFILE == 'load'
+        run: node scripts/compare-baseline.mjs load
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: '${{ env.PROFILE }}-report', path: results/ }
