@@ -1,0 +1,31 @@
+{
+  "name": "api-load-testing-suite",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Suíte de testes de performance para APIs de e-commerce com k6 + TypeScript: SLOs como código, detecção de ponto de ruptura, métricas de negócio e gate de regressão no CI.",
+  "author": "Francisco Gorgonho <francisco.gorgonho@gmail.com>",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "mock": "node mock-api/server.mjs",
+    "mock:chaos": "node --env-file=mock-api/chaos.env mock-api/server.mjs",
+    "typecheck": "tsc --noEmit",
+    "test:smoke": "k6 run -e PROFILE=smoke src/tests/ecommerce.test.ts",
+    "test:load": "k6 run -e PROFILE=load src/tests/ecommerce.test.ts",
+    "test:spike": "k6 run -e PROFILE=spike src/tests/ecommerce.test.ts",
+    "test:stress": "k6 run -e PROFILE=stress src/tests/ecommerce.test.ts",
+    "test:soak": "k6 run -e PROFILE=soak src/tests/ecommerce.test.ts",
+    "test:load:grafana": "k6 run -o experimental-prometheus-rw -e PROFILE=load src/tests/ecommerce.test.ts",
+    "baseline:compare": "node scripts/compare-baseline.mjs load",
+    "baseline:update": "node scripts/compare-baseline.mjs load --update",
+    "infra:up": "docker compose -f infra/docker-compose.yml up -d",
+    "infra:down": "docker compose -f infra/docker-compose.yml down"
+  },
+  "devDependencies": {
+    "@types/k6": "^2.3.0",
+    "typescript": "^5.9.3"
+  }
+}
