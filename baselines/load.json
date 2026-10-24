@@ -1,0 +1,143 @@
+{
+  "meta": {
+    "testId": "load-2026-10-24T22-11-27-955Z",
+    "profile": "load",
+    "description": "Tráfego típico (100% da média) — valida SLAs",
+    "env": "local",
+    "baseUrl": "http://localhost:3333",
+    "durationS": 79.1,
+    "generatedAt": "2026-10-24T22:11:27.958Z"
+  },
+  "verdict": "PASS",
+  "failedThresholds": [],
+  "throughput": {
+      "reqPerS": 55.22,
+      "requests": 4365,
+      "iterations": 1385,
+      "droppedIterations": 0,
+      "checksRate": 1
+    },
+  "flows": [
+      {
+        "flow": "browse",
+        "requests": 3534,
+        "failed": 0,
+        "p95": 78.01,
+        "p99": 84.89,
+        "errorRate": 0,
+        "slo": {
+          "p95": 400,
+          "p99": 800,
+          "maxErrorRate": 0.01
+        },
+        "pass": true,
+        "budgetConsumed": 0
+      },
+      {
+        "flow": "auth",
+        "requests": 8,
+        "failed": 0,
+        "p95": 118.01,
+        "p99": 120.77,
+        "errorRate": 0,
+        "slo": {
+          "p95": 600,
+          "p99": 1200,
+          "maxErrorRate": 0.005
+        },
+        "pass": true,
+        "budgetConsumed": 0
+      },
+      {
+        "flow": "cart",
+        "requests": 615,
+        "failed": 0,
+        "p95": 57.94,
+        "p99": 64.45,
+        "errorRate": 0,
+        "slo": {
+          "p95": 500,
+          "p99": 1000,
+          "maxErrorRate": 0.005
+        },
+        "pass": true,
+        "budgetConsumed": 0
+      },
+      {
+        "flow": "checkout",
+        "requests": 207,
+        "failed": 0,
+        "p95": 181.36,
+        "p99": 186.71,
+        "errorRate": 0,
+        "slo": {
+          "p95": 800,
+          "p99": 1500,
+          "maxErrorRate": 0.001,
+          "abortOnFail": true
+        },
+        "pass": true,
+        "budgetConsumed": 0
+      }
+    ],
+  "endpoints": [
+      {
+        "name": "POST /orders",
+        "avg": 145.75,
+        "p95": 181.36,
+        "p99": 186.71,
+        "count": 207
+      },
+      {
+        "name": "POST /auth/login",
+        "avg": 94.49,
+        "p95": 118.01,
+        "p99": 120.77,
+        "count": 8
+      },
+      {
+        "name": "GET /search",
+        "avg": 65.31,
+        "p95": 83.13,
+        "p99": 88.74,
+        "count": 1178
+      },
+      {
+        "name": "POST /cart/{id}/items",
+        "avg": 45.57,
+        "p95": 59.12,
+        "p99": 66.56,
+        "count": 408
+      },
+      {
+        "name": "GET /products",
+        "avg": 40.5,
+        "p95": 53.39,
+        "p99": 57.68,
+        "count": 1178
+      },
+      {
+        "name": "POST /cart",
+        "avg": 36.29,
+        "p95": 44.89,
+        "p99": 50.66,
+        "count": 207
+      },
+      {
+        "name": "GET /products/{id}",
+        "avg": 30.38,
+        "p95": 40.66,
+        "p99": 45.05,
+        "count": 1178
+      }
+    ],
+  "business": {
+      "sessions": 1385,
+      "ordersConfirmed": 207,
+      "conversionRate": 0.1495,
+      "checkoutSuccessRate": 1,
+      "revenueConfirmed": 284809,
+      "revenueAtRisk": 0,
+      "journeyP95": 1714.2
+    }
+}
