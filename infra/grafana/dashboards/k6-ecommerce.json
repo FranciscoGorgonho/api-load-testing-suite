@@ -1,0 +1,95 @@
+{
+  "uid": "k6-ecommerce",
+  "title": "k6 · E-commerce — SLOs & Negócio",
+  "tags": ["k6", "performance"],
+  "timezone": "browser",
+  "refresh": "5s",
+  "time": { "from": "now-30m", "to": "now" },
+  "schemaVersion": 39,
+  "templating": {
+    "list": [
+      {
+        "name": "testid",
+        "label": "Execução",
+        "type": "query",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "query": "label_values(k6_http_reqs_total, testid)",
+        "refresh": 2,
+        "sort": 2
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1, "type": "stat", "title": "Req/s",
+      "gridPos": { "x": 0, "y": 0, "w": 4, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "expr": "sum(rate(k6_http_reqs_total{testid=\"$testid\"}[30s]))" }],
+      "fieldConfig": { "defaults": { "unit": "reqps", "decimals": 0 } }
+    },
+    {
+      "id": 2, "type": "stat", "title": "VUs ativas",
+      "gridPos": { "x": 4, "y": 0, "w": 4, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "expr": "sum(k6_vus{testid=\"$testid\"})" }]
+    },
+    {
+      "id": 3, "type": "stat", "title": "Pedidos confirmados",
+      "gridPos": { "x": 8, "y": 0, "w": 4, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "expr": "sum(k6_funnel_orders_confirmed_total{testid=\"$testid\"})" }]
+    },
+    {
+      "id": 4, "type": "stat", "title": "Receita em risco",
+      "gridPos": { "x": 12, "y": 0, "w": 6, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "expr": "sum(k6_revenue_at_risk_total{testid=\"$testid\"}) or vector(0)" }],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyBRL",
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 1 }] }
+        }
+      }
+    },
+    {
+      "id": 5, "type": "stat", "title": "Iterações descartadas",
+      "description": "> 0 indica gerador de carga saturado — não é o sistema.",
+      "gridPos": { "x": 18, "y": 0, "w": 6, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "expr": "sum(k6_dropped_iterations_total{testid=\"$testid\"}) or vector(0)" }],
+      "fieldConfig": {
+        "defaults": { "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "orange", "value": 1 }] } }
+      }
+    },
+    {
+      "id": 6, "type": "timeseries", "title": "Latência p95 por fluxo",
+      "gridPos": { "x": 0, "y": 4, "w": 12, "h": 9 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "expr": "max by (flow) (k6_http_req_duration_p95{testid=\"$testid\"})", "legendFormat": "{{flow}}" }],
+      "fieldConfig": { "defaults": { "unit": "s" } }
+    },
+    {
+      "id": 7, "type": "timeseries", "title": "Taxa de erro por fluxo",
+      "gridPos": { "x": 12, "y": 4, "w": 12, "h": 9 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "expr": "avg by (flow) (k6_http_req_failed_rate{testid=\"$testid\"})", "legendFormat": "{{flow}}" }],
+      "fieldConfig": { "defaults": { "unit": "percentunit", "max": 1 } }
+    },
+    {
+      "id": 8, "type": "timeseries", "title": "Throughput × VUs",
+      "gridPos": { "x": 0, "y": 13, "w": 12, "h": 9 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        { "expr": "sum(rate(k6_http_reqs_total{testid=\"$testid\"}[30s]))", "legendFormat": "req/s" },
+        { "expr": "sum(k6_vus{testid=\"$testid\"})", "legendFormat": "VUs" }
+      ]
+    },
+    {
+      "id": 9, "type": "table", "title": "Endpoints por p95",
+      "gridPos": { "x": 12, "y": 13, "w": 12, "h": 9 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "expr": "sort_desc(max by (name) (k6_http_req_duration_p95{testid=\"$testid\"}))", "instant": true, "format": "table" }],
+      "fieldConfig": { "defaults": { "unit": "s" } }
+    }
+  ]
+}

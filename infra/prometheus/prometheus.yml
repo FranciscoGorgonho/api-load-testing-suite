@@ -1,0 +1,9 @@
+global:
+  scrape_interval: 15s
+
+# Métricas do k6 chegam via remote write; o scrape da API alvo entra aqui
+# quando ela expuser /metrics — permitindo correlacionar cliente × servidor.
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ['localhost:9090']
