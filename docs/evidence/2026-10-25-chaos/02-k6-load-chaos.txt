@@ -1,0 +1,23 @@
+# Passo 2 — k6 load contra API em chaos (2026-10-25 06:18:14)
+Comando: k6 run -e PROFILE=load -e TIME_SCALE=0.2 -e TEST_ID=local-chaos-evidencia src/tests/ecommerce.test.ts
+
+═══ LOAD · local · 31.9s ═══  ❌ FAIL
+Throughput: 48.43 req/s · 1547 reqs · checks 98.15% · ⚠ 7 iterações descartadas (gerador saturado)
+
+Fluxo       p95 (SLO)         p99 (SLO)          erros (SLO)       budget
+✗ browse    360.3ms (<400)    386.76ms (<800)    1.61% (<1.00%)    160.60% 
+✓ auth      375.02ms (<600)   378.1ms (<1200)    0.00% (<0.50%)    0.00%    ⚠ n=9: percentis pouco confiáveis
+✗ cart      334.07ms (<500)   375.23ms (<1000)   1.33% (<0.50%)    266.70% 
+✗ checkout  471.29ms (<800)   496.86ms (<1500)   4.48% (<0.10%)    4477.60% ⚠ n=67: percentis pouco confiáveis
+
+Negócio: 64 pedidos · conversão 12.40% · confirmado R$ 81.204,90 · em risco R$ 2.754,90
+
+Thresholds violados:
+  - http_req_failed{flow:checkout}: rate<0.001
+  - http_req_failed{flow:cart}: rate<0.005
+  - http_req_failed{flow:browse}: rate<0.01
+  - checks: rate>=0.99
+
+Relatório: results/load-report.html
+time="2026-10-25T06:18:47-03:00" level=error msg="thresholds on metrics 'checks, http_req_failed{flow:browse}, http_req_failed{flow:cart}, http_req_failed{flow:checkout}' were crossed; at least one has abortOnFail enabled, stopping test prematurely"
+k6 exit code: 99

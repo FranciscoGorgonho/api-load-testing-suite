@@ -23,8 +23,8 @@ export function compareFlows(current, baseline, opts = {}) {
     const b = base[f.flow];
     if (!b) return { flow: f.flow, current: f, status: 'new', issues: [] };
     if (tooFew(f) || tooFew(b)) {
-      const n = Math.min(f.requests ?? Infinity, b.requests ?? Infinity);
-      return { flow: f.flow, current: f, baseline: b, status: 'insufficient', issues: [`n=${n} < ${minSamples}`] };
+      const issue = `n atual=${f.requests ?? '?'}, base=${b.requests ?? '?'} (mín. ${minSamples})`;
+      return { flow: f.flow, current: f, baseline: b, status: 'insufficient', issues: [issue] };
     }
 
     const issues = [];

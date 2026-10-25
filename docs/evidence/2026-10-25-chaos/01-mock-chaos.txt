@@ -1,0 +1,14 @@
+# Passo 1 — mock em modo chaos (2026-10-25 06:18:05)
+Config (mock-api/chaos.env):
+CHAOS_ERROR_RATE=0.02
+CHAOS_LATENCY_MS=250
+
+Log do mock:
+mock e-commerce API em http://localhost:3333 (workers=20, queueLimit=150)
+
+Prova de latência injetada (GET /products, base ~35ms sem chaos):
+  HTTP 200 em 0.304143s
+  HTTP 200 em 0.300913s
+  HTTP 200 em 0.293888s
+
+Baseline antes do teste: dd2ea9d9b209ac9fa191dc031e6977e49a35712a *baselines/load.json

@@ -1,0 +1,152 @@
+{
+  "meta": {
+    "testId": "local-chaos-evidencia",
+    "profile": "load",
+    "description": "Tráfego típico (100% da média) — valida SLAs",
+    "env": "local",
+    "baseUrl": "http://localhost:3333",
+    "durationS": 31.9,
+    "generatedAt": "2026-10-25T09:18:47.132Z"
+  },
+  "verdict": "FAIL",
+  "failedThresholds": [
+    "http_req_failed{flow:checkout}: rate<0.001",
+    "http_req_failed{flow:cart}: rate<0.005",
+    "http_req_failed{flow:browse}: rate<0.01",
+    "checks: rate>=0.99"
+  ],
+  "throughput": {
+    "reqPerS": 48.43,
+    "requests": 1547,
+    "iterations": 467,
+    "droppedIterations": 7,
+    "checksRate": 0.9815
+  },
+  "flows": [
+    {
+      "flow": "browse",
+      "requests": 1245,
+      "failed": 20,
+      "p95": 360.3,
+      "p99": 386.76,
+      "errorRate": 0.01606,
+      "slo": {
+        "p95": 400,
+        "p99": 800,
+        "maxErrorRate": 0.01
+      },
+      "pass": false,
+      "budgetConsumed": 1.606,
+      "lowSample": false
+    },
+    {
+      "flow": "auth",
+      "requests": 9,
+      "failed": 0,
+      "p95": 375.02,
+      "p99": 378.1,
+      "errorRate": 0,
+      "slo": {
+        "p95": 600,
+        "p99": 1200,
+        "maxErrorRate": 0.005
+      },
+      "pass": true,
+      "budgetConsumed": 0,
+      "lowSample": true
+    },
+    {
+      "flow": "cart",
+      "requests": 225,
+      "failed": 3,
+      "p95": 334.07,
+      "p99": 375.23,
+      "errorRate": 0.01333,
+      "slo": {
+        "p95": 500,
+        "p99": 1000,
+        "maxErrorRate": 0.005
+      },
+      "pass": false,
+      "budgetConsumed": 2.667,
+      "lowSample": false
+    },
+    {
+      "flow": "checkout",
+      "requests": 67,
+      "failed": 3,
+      "p95": 471.29,
+      "p99": 496.86,
+      "errorRate": 0.04478,
+      "slo": {
+        "p95": 800,
+        "p99": 1500,
+        "maxErrorRate": 0.001,
+        "abortOnFail": true
+      },
+      "pass": false,
+      "budgetConsumed": 44.776,
+      "lowSample": true
+    }
+  ],
+  "endpoints": [
+    {
+      "name": "POST /orders",
+      "avg": 407.28,
+      "p95": 471.29,
+      "p99": 496.86,
+      "count": 67
+    },
+    {
+      "name": "GET /search",
+      "avg": 326.17,
+      "p95": 375.47,
+      "p99": 390.77,
+      "count": 399
+    },
+    {
+      "name": "POST /auth/login",
+      "avg": 359.43,
+      "p95": 375.02,
+      "p99": 378.1,
+      "count": 9
+    },
+    {
+      "name": "POST /cart",
+      "avg": 297.42,
+      "p95": 352.36,
+      "p99": 378.24,
+      "count": 76
+    },
+    {
+      "name": "GET /products",
+      "avg": 299.03,
+      "p95": 349.68,
+      "p99": 380.43,
+      "count": 434
+    },
+    {
+      "name": "GET /products/{id}",
+      "avg": 289.46,
+      "p95": 339.96,
+      "p99": 370.94,
+      "count": 412
+    },
+    {
+      "name": "POST /cart/{id}/items",
+      "avg": 300.35,
+      "p95": 325.08,
+      "p99": 352.43,
+      "count": 149
+    }
+  ],
+  "business": {
+    "sessions": 516,
+    "ordersConfirmed": 64,
+    "conversionRate": 0.124,
+    "checkoutSuccessRate": 0.9143,
+    "revenueConfirmed": 81204.9,
+    "revenueAtRisk": 2754.9,
+    "journeyP95": 3042.95
+  }
+}

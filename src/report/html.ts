@@ -45,8 +45,8 @@ export function renderHtml(s: CompactSummary): string {
       const budget = Number.isFinite(f.budgetConsumed) ? Math.min(f.budgetConsumed, 1) : 1;
       const budgetCls = budget >= 1 ? 'bad' : budget >= 0.5 ? 'warn' : 'ok';
       return `<tr>
-        <td><span class="dot ${f.pass ? 'ok' : 'bad'}"></span>${f.flow}</td>
-        <td class="num">${f.requests}${f.lowSample ? ' <span class="chip" title="Poucas amostras: p95/p99 pouco confiáveis">amostra baixa</span>' : ''}</td>
+        <td><span class="dot ${f.pass ? 'ok' : 'bad'}"></span>${f.flow}${f.lowSample ? '<span class="chip" title="Poucas amostras: p95/p99 pouco confiáveis">amostra baixa</span>' : ''}</td>
+        <td class="num">${f.requests}</td>
         <td class="num ${f.p95 >= f.slo.p95 ? 'bad-t' : ''}">${f.p95} <small>/ ${f.slo.p95}</small></td>
         <td class="num ${f.p99 >= f.slo.p99 ? 'bad-t' : ''}">${f.p99} <small>/ ${f.slo.p99}</small></td>
         <td class="num ${f.errorRate >= f.slo.maxErrorRate ? 'bad-t' : ''}">${pct(f.errorRate, 3)} <small>/ ${pct(f.slo.maxErrorRate, 1)}</small></td>

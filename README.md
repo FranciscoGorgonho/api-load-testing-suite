@@ -113,3 +113,4 @@ npm run test:load:grafana
 - [Estratégia de testes de carga](docs/estrategia-testes-de-carga.md): objetivos, SLAs, perfis e arquitetura de métricas.
 - [ADR 0001 — Modelo aberto](docs/adr/0001-modelo-aberto-arrival-rate.md)
 - [ADR 0002 — SLOs como código](docs/adr/0002-slos-como-codigo.md)
+- [Evidência: gates contra API degradada (chaos)](docs/evidence/2026-10-25-chaos/README.md), com logs, relatório e print de uma execução real
