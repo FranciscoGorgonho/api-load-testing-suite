@@ -46,7 +46,7 @@ export function renderHtml(s: CompactSummary): string {
       const budgetCls = budget >= 1 ? 'bad' : budget >= 0.5 ? 'warn' : 'ok';
       return `<tr>
         <td><span class="dot ${f.pass ? 'ok' : 'bad'}"></span>${f.flow}</td>
-        <td class="num">${f.requests}</td>
+        <td class="num">${f.requests}${f.lowSample ? ' <span class="chip" title="Poucas amostras: p95/p99 pouco confiáveis">amostra baixa</span>' : ''}</td>
         <td class="num ${f.p95 >= f.slo.p95 ? 'bad-t' : ''}">${f.p95} <small>/ ${f.slo.p95}</small></td>
         <td class="num ${f.p99 >= f.slo.p99 ? 'bad-t' : ''}">${f.p99} <small>/ ${f.slo.p99}</small></td>
         <td class="num ${f.errorRate >= f.slo.maxErrorRate ? 'bad-t' : ''}">${pct(f.errorRate, 3)} <small>/ ${pct(f.slo.maxErrorRate, 1)}</small></td>
@@ -97,6 +97,7 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:8px;borde
 .lead{margin:0 0 12px}svg{width:100%;height:auto}.bar{fill:var(--accent);opacity:.75}.bar.bad,.sw.bad{fill:var(--bad);background:var(--bad)}
 .slo{stroke:var(--bad);stroke-dasharray:4 4}.rps{fill:none;stroke:var(--ok);stroke-width:2.5}.tick{fill:var(--muted);font-size:11px}
 .legend{color:var(--muted);font-size:12px}.sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin:0 4px 0 12px;vertical-align:middle}.sw.bar{background:var(--accent)}.sw.rps{background:var(--ok)}
+.chip{display:inline-block;padding:1px 8px;border-radius:999px;border:1px solid var(--warn);color:var(--warn);font-size:11px;margin-left:6px;white-space:nowrap}
 .fails{color:var(--bad);font-family:ui-monospace,monospace;font-size:13px}
 </style></head><body><main>
 <header><div><h1>Relatório de Performance — ${esc(s.meta.profile)}</h1>

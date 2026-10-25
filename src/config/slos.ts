@@ -29,6 +29,12 @@ export const KNEE_CRITERIA = { p95: 500, errorRate: 0.01 };
 /** Checks funcionais mínimos (status + contrato). */
 export const MIN_CHECK_RATE = 0.99;
 
+/**
+ * Abaixo disso, p95/p99 não são estatisticamente confiáveis e o fluxo é sinalizado.
+ * Mesmo valor padrão de REGRESSION_MIN_SAMPLES em scripts/lib/regression.mjs.
+ */
+export const MIN_SAMPLES_FOR_PERCENTILES = 100;
+
 type Thresholds = Record<string, Array<string | { threshold: string; abortOnFail?: boolean; delayAbortEval?: string }>>;
 
 /**

@@ -13,6 +13,7 @@
     "mock": "node mock-api/server.mjs",
     "mock:chaos": "node --env-file=mock-api/chaos.env mock-api/server.mjs",
     "typecheck": "tsc --noEmit",
+    "test:unit": "node --test \"scripts/**/*.test.mjs\"",
     "test:smoke": "k6 run -e PROFILE=smoke src/tests/ecommerce.test.ts",
     "test:load": "k6 run -e PROFILE=load src/tests/ecommerce.test.ts",
     "test:spike": "k6 run -e PROFILE=spike src/tests/ecommerce.test.ts",

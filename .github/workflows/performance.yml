@@ -29,7 +29,7 @@ env:
 
 jobs:
   quality:
-    name: Typecheck
+    name: Typecheck + testes unitários
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
@@ -37,6 +37,7 @@ jobs:
         with: { node-version: 22, cache: npm }
       - run: npm ci
       - run: npm run typecheck
+      - run: npm run test:unit
 
   smoke:
     name: Smoke (gate de PR)

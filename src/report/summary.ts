@@ -3,7 +3,7 @@
 
 import type { Profile } from '../config/profiles.ts';
 import type { Environment } from '../config/environments.ts';
-import { FLOWS, KNEE_CRITERIA, SLOS, type Flow } from '../config/slos.ts';
+import { FLOWS, KNEE_CRITERIA, MIN_SAMPLES_FOR_PERCENTILES, SLOS, type Flow } from '../config/slos.ts';
 import { ENDPOINTS } from '../lib/http.ts';
 import { stageErrorsMetric, stageLatencyMetric } from '../lib/stages.ts';
 import { renderHtml } from './html.ts';
@@ -35,6 +35,8 @@ export interface FlowResult {
   pass: boolean;
   /** Fração do error budget consumida (1 = 100%). */
   budgetConsumed: number;
+  /** Poucas requisições para percentis confiáveis (< MIN_SAMPLES_FOR_PERCENTILES). */
+  lowSample: boolean;
 }
 
 export interface StageResult {
@@ -94,6 +96,7 @@ export function buildSummary(data: SummaryData, ctx: Context): Record<string, st
       slo,
       pass: requests > 0 && duration['p(95)'] < slo.p95 && duration['p(99)'] < slo.p99 && errorRate < slo.maxErrorRate,
       budgetConsumed: round(allowed > 0 ? failed / allowed : failed > 0 ? Infinity : 0, 3),
+      lowSample: requests < MIN_SAMPLES_FOR_PERCENTILES,
     };
   });
 
@@ -196,7 +199,8 @@ function renderConsole(s: CompactSummary): string {
     ...s.flows.map(
       (f) =>
         `${f.pass ? '✓' : '✗'} ${f.flow.padEnd(9)} ${`${f.p95}ms (<${f.slo.p95})`.padEnd(17)} ${`${f.p99}ms (<${f.slo.p99})`.padEnd(18)} ` +
-        `${`${pct(f.errorRate)} (<${pct(f.slo.maxErrorRate)})`.padEnd(17)} ${Number.isFinite(f.budgetConsumed) ? pct(f.budgetConsumed) : '∞'}`,
+        `${`${pct(f.errorRate)} (<${pct(f.slo.maxErrorRate)})`.padEnd(17)} ${(Number.isFinite(f.budgetConsumed) ? pct(f.budgetConsumed) : '∞').padEnd(8)}` +
+        (f.lowSample ? ` ⚠ n=${f.requests}: percentis pouco confiáveis` : ''),
     ),
     '',
     `Negócio: ${s.business.ordersConfirmed} pedidos · conversão ${pct(s.business.conversionRate)} · ` +
