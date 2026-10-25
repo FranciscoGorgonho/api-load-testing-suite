@@ -1,0 +1,4 @@
+# Passo 5 — limpeza (2026-10-25 06:19:43)
+Mock em chaos encerrado (porta 3333 livre).
+Baseline depois do teste: dd2ea9d9b209ac9fa191dc031e6977e49a35712a *baselines/load.json
+git status baselines/: 0 alteração(ões)

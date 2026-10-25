@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Relatório de Performance · load</title>
+<style>
+:root{--bg:#f7f7f5;--card:#fff;--fg:#1d1d1b;--muted:#6b6b66;--line:#e4e3de;--ok:#1f8a5b;--warn:#c58a00;--bad:#c4372f;--info:#2f62c4;--accent:#5b5bd6}
+@media (prefers-color-scheme:dark){:root{--bg:#141413;--card:#1e1e1c;--fg:#ecebe6;--muted:#9c9b95;--line:#33322f;--ok:#3fbf86;--warn:#e0a826;--bad:#ef6a60;--info:#6f98ef;--accent:#8f8ff0}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1000px;margin:0 auto;padding:32px 16px 64px}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:24px}
+h1{font-size:22px;margin:0}h2{font-size:16px;margin:0 0 12px}.sub{color:var(--muted);font-size:13px}
+.badge{padding:6px 14px;border-radius:999px;font-weight:600;color:#fff}.badge.ok{background:var(--ok)}.badge.bad{background:var(--bad)}.badge.info{background:var(--info)}
+section{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;margin-bottom:16px;overflow-x:auto}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.kpi{border:1px solid var(--line);border-radius:10px;padding:12px}.kpi b{display:block;font-size:22px;font-variant-numeric:tabular-nums}.kpi span{color:var(--muted);font-size:12px}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:8px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--muted);font-weight:500;font-size:12px}
+.num{text-align:right;font-variant-numeric:tabular-nums}small{color:var(--muted)}.bad-t{color:var(--bad);font-weight:600}.row-bad td{color:var(--bad)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px}.dot.ok{background:var(--ok)}.dot.bad{background:var(--bad)}
+.meter{display:inline-block;width:90px;height:8px;background:var(--line);border-radius:4px;vertical-align:middle;margin-right:6px;overflow:hidden}
+.meter div{height:100%}.meter .ok{background:var(--ok)}.meter .warn{background:var(--warn)}.meter .bad{background:var(--bad)}
+.lead{margin:0 0 12px}svg{width:100%;height:auto}.bar{fill:var(--accent);opacity:.75}.bar.bad,.sw.bad{fill:var(--bad);background:var(--bad)}
+.slo{stroke:var(--bad);stroke-dasharray:4 4}.rps{fill:none;stroke:var(--ok);stroke-width:2.5}.tick{fill:var(--muted);font-size:11px}
+.legend{color:var(--muted);font-size:12px}.sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin:0 4px 0 12px;vertical-align:middle}.sw.bar{background:var(--accent)}.sw.rps{background:var(--ok)}
+.chip{display:inline-block;padding:1px 8px;border-radius:999px;border:1px solid var(--warn);color:var(--warn);font-size:11px;margin-left:6px;white-space:nowrap}
+.fails{color:var(--bad);font-family:ui-monospace,monospace;font-size:13px}
+</style></head><body><main>
+<header><div><h1>Relatório de Performance — load</h1>
+<div class="sub">Tráfego típico (100% da média) — valida SLAs · local (http://localhost:3333) · 31.9s · local-chaos-evidencia</div></div>
+<span class="badge bad">Reprovado</span></header>
+
+<section><div class="kpis">
+  <div class="kpi"><b>48.43</b><span>req/s médio</span></div>
+  <div class="kpi"><b>98.15%</b><span>checks funcionais</span></div>
+  <div class="kpi"><b>64</b><span>pedidos confirmados</span></div>
+  <div class="kpi"><b>12.40%</b><span>conversão sessão → pedido</span></div>
+  <div class="kpi"><b>R$ 81.204,90</b><span>receita confirmada</span></div>
+  <div class="kpi"><b style="color:var(--bad)">R$ 2.754,90</b><span>receita em risco</span></div>
+</div>
+<p class="fails">⚠ 7 iterações descartadas: o gerador de carga não acompanhou a taxa alvo.</p>
+<p class="fails">Thresholds violados:<br>http_req_failed{flow:checkout}: rate&lt;0.001<br>http_req_failed{flow:cart}: rate&lt;0.005<br>http_req_failed{flow:browse}: rate&lt;0.01<br>checks: rate&gt;=0.99</p>
+</section>
+
+<section><h2>SLOs por fluxo</h2>
+<table><thead><tr><th>Fluxo</th><th class="num">Reqs</th><th class="num">p95 / SLO (ms)</th><th class="num">p99 / SLO (ms)</th><th class="num">Erros / SLO</th><th>Error budget</th></tr></thead>
+<tbody><tr>
+        <td><span class="dot bad"></span>browse</td>
+        <td class="num">1245</td>
+        <td class="num ">360.3 <small>/ 400</small></td>
+        <td class="num ">386.76 <small>/ 800</small></td>
+        <td class="num bad-t">1.606% <small>/ 1.0%</small></td>
+        <td><div class="meter"><div class="bad" style="width:100.0%"></div></div>
+            <small>161%</small></td>
+      </tr><tr>
+        <td><span class="dot ok"></span>auth</td>
+        <td class="num">9 <span class="chip" title="Poucas amostras: p95/p99 pouco confiáveis">amostra baixa</span></td>
+        <td class="num ">375.02 <small>/ 600</small></td>
+        <td class="num ">378.1 <small>/ 1200</small></td>
+        <td class="num ">0.000% <small>/ 0.5%</small></td>
+        <td><div class="meter"><div class="ok" style="width:0.0%"></div></div>
+            <small>0%</small></td>
+      </tr><tr>
+        <td><span class="dot bad"></span>cart</td>
+        <td class="num">225</td>
+        <td class="num ">334.07 <small>/ 500</small></td>
+        <td class="num ">375.23 <small>/ 1000</small></td>
+        <td class="num bad-t">1.333% <small>/ 0.5%</small></td>
+        <td><div class="meter"><div class="bad" style="width:100.0%"></div></div>
+            <small>267%</small></td>
+      </tr><tr>
+        <td><span class="dot bad"></span>checkout</td>
+        <td class="num">67 <span class="chip" title="Poucas amostras: p95/p99 pouco confiáveis">amostra baixa</span></td>
+        <td class="num ">471.29 <small>/ 800</small></td>
+        <td class="num ">496.86 <small>/ 1500</small></td>
+        <td class="num bad-t">4.478% <small>/ 0.1%</small></td>
+        <td><div class="meter"><div class="bad" style="width:100.0%"></div></div>
+            <small>4478%</small></td>
+      </tr></tbody></table></section>
+
+
+
+<section><h2>Endpoints (ordenados por p95)</h2>
+<table><thead><tr><th>Endpoint</th><th class="num">Reqs</th><th class="num">média</th><th class="num">p95</th><th class="num">p99</th></tr></thead>
+<tbody><tr><td><code>POST /orders</code></td><td class="num">67</td><td class="num">407.28</td><td class="num">471.29</td><td class="num">496.86</td></tr><tr><td><code>GET /search</code></td><td class="num">399</td><td class="num">326.17</td><td class="num">375.47</td><td class="num">390.77</td></tr><tr><td><code>POST /auth/login</code></td><td class="num">9</td><td class="num">359.43</td><td class="num">375.02</td><td class="num">378.1</td></tr><tr><td><code>POST /cart</code></td><td class="num">76</td><td class="num">297.42</td><td class="num">352.36</td><td class="num">378.24</td></tr><tr><td><code>GET /products</code></td><td class="num">434</td><td class="num">299.03</td><td class="num">349.68</td><td class="num">380.43</td></tr><tr><td><code>GET /products/{id}</code></td><td class="num">412</td><td class="num">289.46</td><td class="num">339.96</td><td class="num">370.94</td></tr><tr><td><code>POST /cart/{id}/items</code></td><td class="num">149</td><td class="num">300.35</td><td class="num">325.08</td><td class="num">352.43</td></tr></tbody></table></section>
+
+<p class="sub">Gerado em 2026-10-25T09:18:47.132Z · jornada de compra p95 3042.95ms</p>
+</main></body></html>
