@@ -40,6 +40,29 @@ describe('compareFlows', () => {
     assert.equal(r.status, 'new');
   });
 
+  it('não reprova fluxo com amostra atual insuficiente, mesmo com piora grande', () => {
+    const [r] = compareFlows(summary(flow('auth', { p95: 300, requests: 8 })), summary(flow('auth')));
+    assert.equal(r.status, 'insufficient');
+    assert.deepEqual(r.issues, ['n=8 < 100']);
+  });
+
+  it('não reprova quando a baseline tem amostra insuficiente', () => {
+    const [r] = compareFlows(summary(flow('auth', { p95: 300 })), summary(flow('auth', { requests: 12 })));
+    assert.equal(r.status, 'insufficient');
+    assert.deepEqual(r.issues, ['n=12 < 100']);
+  });
+
+  it('considera suficiente quando requests atinge o mínimo exato', () => {
+    const [r] = compareFlows(summary(flow('auth', { requests: 100 })), summary(flow('auth', { requests: 100 })));
+    assert.equal(r.status, 'ok');
+  });
+
+  it('trata resumos antigos sem requests como amostra suficiente', () => {
+    const { requests: _, ...legacy } = flow('browse', { p95: 200 });
+    const [r] = compareFlows(summary(legacy), summary(flow('browse')));
+    assert.equal(r.status, 'regression');
+  });
+
   it('respeita opções customizadas', () => {
     const [r] = compareFlows(summary(flow('browse', { p95: 130 })), summary(flow('browse')), { tolerance: 0.5 });
     assert.equal(r.status, 'ok');

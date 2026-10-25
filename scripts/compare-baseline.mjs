@@ -15,6 +15,7 @@ const opts = {
   tolerance: Number(process.env.REGRESSION_TOLERANCE ?? DEFAULTS.tolerance),
   noiseFloorMs: Number(process.env.REGRESSION_NOISE_FLOOR_MS ?? DEFAULTS.noiseFloorMs),
   errorDelta: Number(process.env.REGRESSION_ERROR_DELTA ?? DEFAULTS.errorDelta),
+  minSamples: Number(process.env.REGRESSION_MIN_SAMPLES ?? DEFAULTS.minSamples),
 };
 
 const currentPath = `results/${profile}-summary.json`;
@@ -46,24 +47,31 @@ const current = JSON.parse(readFileSync(currentPath, 'utf8'));
 const baseline = JSON.parse(readFileSync(baselinePath, 'utf8'));
 const results = compareFlows(current, baseline, opts);
 const regressions = results.filter((r) => r.status === 'regression');
+const insufficient = results.filter((r) => r.status === 'insufficient');
 
 const pctErr = (n) => `${(n * 100).toFixed(2)}%`;
-const icon = { ok: '🟢', regression: '🔴', new: '🆕' };
+const icon = { ok: '🟢', regression: '🔴', new: '🆕', insufficient: '⚪' };
 const rows = results.map(({ flow, current: f, baseline: b, status }) =>
   b
-    ? `| ${flow} | ${f.p95} | ${b.p95} | ${formatDelta(f.p95, b.p95)} | ${f.p99} | ${b.p99} | ${pctErr(f.errorRate)} | ${pctErr(b.errorRate)} | ${icon[status]} |`
-    : `| ${flow} | ${f.p95} | — | novo | ${f.p99} | — | ${pctErr(f.errorRate)} | — | ${icon[status]} |`,
+    ? `| ${flow} | ${f.requests ?? '—'} | ${f.p95} | ${b.p95} | ${formatDelta(f.p95, b.p95)} | ${f.p99} | ${b.p99} | ${pctErr(f.errorRate)} | ${pctErr(b.errorRate)} | ${icon[status]} |`
+    : `| ${flow} | ${f.requests ?? '—'} | ${f.p95} | — | novo | ${f.p99} | — | ${pctErr(f.errorRate)} | — | ${icon[status]} |`,
 );
 
 report(
   [
     `### Regressão vs baseline — \`${profile}\``,
-    `Baseline: \`${baseline.meta.testId}\` · tolerância +${opts.tolerance * 100}% (piso ${opts.noiseFloorMs}ms) · erros +${opts.errorDelta * 100}pp`,
+    `Baseline: \`${baseline.meta.testId}\` · tolerância +${opts.tolerance * 100}% (piso ${opts.noiseFloorMs}ms) · erros +${opts.errorDelta * 100}pp · amostra mínima ${opts.minSamples}`,
     '',
-    '| Fluxo | p95 atual | p95 base | Δ | p99 atual | p99 base | erros atual | erros base | |',
-    '|---|--:|--:|--:|--:|--:|--:|--:|:-:|',
+    '| Fluxo | n | p95 atual | p95 base | Δ | p99 atual | p99 base | erros atual | erros base | |',
+    '|---|--:|--:|--:|--:|--:|--:|--:|--:|:-:|',
     ...rows,
     '',
+    ...(insufficient.length
+      ? [
+          `> ⚪ **Amostra insuficiente** — fora do gate relativo (ainda protegidos pelo SLO absoluto): ${insufficient.map((r) => `${r.flow} (${r.issues[0]})`).join(', ')}`,
+          '',
+        ]
+      : []),
     regressions.length
       ? `**❌ Regressão detectada:** ${regressions.map((r) => `${r.flow}: ${r.issues.join(', ')}`).join(' · ')}`
       : '**✅ Sem regressão de performance.**',
