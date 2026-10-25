@@ -29,8 +29,8 @@ jobs:
     name: Typecheck
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with: { node-version: 22, cache: npm }
       - run: npm ci
       - run: npm run typecheck
@@ -40,18 +40,19 @@ jobs:
     needs: quality
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with: { node-version: 22 }
       - uses: grafana/setup-k6-action@v1
         with: { k6-version: '${{ env.K6_VERSION }}' }
       - name: Sobe a API mock
         run: |
-          node mock-api/server.mjs &
-          npx --yes wait-on@8 http://localhost:3333/health --timeout 30000
+          node mock-api/server.mjs > mock-api.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:3333/health && exit 0; sleep 1; done
+          cat mock-api.log; exit 1
       - name: k6 smoke
         run: k6 run -e PROFILE=smoke src/tests/ecommerce.test.ts
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: always()
         with: { name: smoke-report, path: results/ }
 
@@ -64,20 +65,21 @@ jobs:
       PROFILE: ${{ inputs.profile || 'load' }}
       TIME_SCALE: ${{ inputs.time_scale || '0.3' }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with: { node-version: 22 }
       - uses: grafana/setup-k6-action@v1
         with: { k6-version: '${{ env.K6_VERSION }}' }
       - name: Sobe a API mock
         run: |
-          node mock-api/server.mjs &
-          npx --yes wait-on@8 http://localhost:3333/health --timeout 30000
+          node mock-api/server.mjs > mock-api.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:3333/health && exit 0; sleep 1; done
+          cat mock-api.log; exit 1
       - name: k6 ${{ env.PROFILE }}
         run: k6 run -e PROFILE=$PROFILE -e TIME_SCALE=$TIME_SCALE -e TEST_ID=gh-${{ github.run_id }} src/tests/ecommerce.test.ts
       - name: Gate de regressão
         if: env.PROFILE == 'load'
         run: node scripts/compare-baseline.mjs load
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: always()
         with: { name: '${{ env.PROFILE }}-report', path: results/ }
