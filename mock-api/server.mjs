@@ -175,4 +175,7 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, () => {
   console.log(`mock e-commerce API em http://localhost:${PORT} (workers=${WORKERS}, queueLimit=${QUEUE_LIMIT})`);
+  if (CHAOS_ERROR_RATE > 0 || CHAOS_LATENCY_MS > 0) {
+    console.log(`⚠ CHAOS ATIVO: ${CHAOS_ERROR_RATE * 100}% de erro, +${CHAOS_LATENCY_MS}ms de latência`);
+  }
 });
