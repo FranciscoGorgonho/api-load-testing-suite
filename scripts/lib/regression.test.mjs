@@ -43,13 +43,18 @@ describe('compareFlows', () => {
   it('não reprova fluxo com amostra atual insuficiente, mesmo com piora grande', () => {
     const [r] = compareFlows(summary(flow('auth', { p95: 300, requests: 8 })), summary(flow('auth')));
     assert.equal(r.status, 'insufficient');
-    assert.deepEqual(r.issues, ['n=8 < 100']);
+    assert.deepEqual(r.issues, ['n atual=8, base=1000 (mín. 100)']);
   });
 
   it('não reprova quando a baseline tem amostra insuficiente', () => {
     const [r] = compareFlows(summary(flow('auth', { p95: 300 })), summary(flow('auth', { requests: 12 })));
     assert.equal(r.status, 'insufficient');
-    assert.deepEqual(r.issues, ['n=12 < 100']);
+    assert.deepEqual(r.issues, ['n atual=1000, base=12 (mín. 100)']);
+  });
+
+  it('mensagem distingue a amostra atual da baseline (regressão: mostrava só o menor n)', () => {
+    const [r] = compareFlows(summary(flow('auth', { requests: 9 })), summary(flow('auth', { requests: 8 })));
+    assert.deepEqual(r.issues, ['n atual=9, base=8 (mín. 100)']);
   });
 
   it('considera suficiente quando requests atinge o mínimo exato', () => {

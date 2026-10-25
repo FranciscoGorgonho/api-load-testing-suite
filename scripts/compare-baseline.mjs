@@ -68,7 +68,7 @@ report(
     '',
     ...(insufficient.length
       ? [
-          `> ⚪ **Amostra insuficiente** — fora do gate relativo (ainda protegidos pelo SLO absoluto): ${insufficient.map((r) => `${r.flow} (${r.issues[0]})`).join(', ')}`,
+          `> ⚪ **Amostra insuficiente** — fora do gate relativo (ainda protegidos pelo SLO absoluto): ${insufficient.map((r) => `**${r.flow}** ${r.issues[0]}`).join(' · ')}`,
           '',
         ]
       : []),
