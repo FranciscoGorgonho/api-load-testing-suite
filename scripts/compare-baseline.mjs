@@ -8,11 +8,14 @@
 // a regressão de 40% que ainda cabe no SLO e passaria despercebida.
 
 import { appendFileSync, copyFileSync, existsSync, mkdirSync, readFileSync } from 'node:fs';
+import { compareFlows, DEFAULTS, formatDelta } from './lib/regression.mjs';
 
 const [profile = 'load', flag] = process.argv.slice(2);
-const TOLERANCE = Number(process.env.REGRESSION_TOLERANCE ?? 0.15); // +15% de latência
-const NOISE_FLOOR_MS = Number(process.env.REGRESSION_NOISE_FLOOR_MS ?? 15); // ignora variações minúsculas
-const ERROR_DELTA = Number(process.env.REGRESSION_ERROR_DELTA ?? 0.005); // +0,5 p.p. de erro
+const opts = {
+  tolerance: Number(process.env.REGRESSION_TOLERANCE ?? DEFAULTS.tolerance),
+  noiseFloorMs: Number(process.env.REGRESSION_NOISE_FLOOR_MS ?? DEFAULTS.noiseFloorMs),
+  errorDelta: Number(process.env.REGRESSION_ERROR_DELTA ?? DEFAULTS.errorDelta),
+};
 
 const currentPath = `results/${profile}-summary.json`;
 const baselinePath = `baselines/${profile}.json`;
@@ -41,40 +44,29 @@ if (!existsSync(baselinePath)) {
 
 const current = JSON.parse(readFileSync(currentPath, 'utf8'));
 const baseline = JSON.parse(readFileSync(baselinePath, 'utf8'));
-const byFlow = (s) => Object.fromEntries(s.flows.map((f) => [f.flow, f]));
-const base = byFlow(baseline);
+const results = compareFlows(current, baseline, opts);
+const regressions = results.filter((r) => r.status === 'regression');
 
-const fmtDelta = (now, before) => {
-  if (!before) return 'n/a';
-  const d = (now - before) / before;
-  return `${d >= 0 ? '+' : ''}${(d * 100).toFixed(1)}%`;
-};
-
-const regressions = [];
-const rows = current.flows.map((f) => {
-  const b = base[f.flow];
-  if (!b) return `| ${f.flow} | ${f.p95} | — | novo | ${f.p99} | — | ${(f.errorRate * 100).toFixed(2)}% | — | 🆕 |`;
-
-  const issues = [];
-  for (const stat of ['p95', 'p99']) {
-    if (f[stat] - b[stat] > NOISE_FLOOR_MS && f[stat] > b[stat] * (1 + TOLERANCE)) issues.push(`${stat} ${fmtDelta(f[stat], b[stat])}`);
-  }
-  if (f.errorRate - b.errorRate > ERROR_DELTA) issues.push(`erros +${((f.errorRate - b.errorRate) * 100).toFixed(2)}pp`);
-  if (issues.length) regressions.push(`${f.flow}: ${issues.join(', ')}`);
-
-  return `| ${f.flow} | ${f.p95} | ${b.p95} | ${fmtDelta(f.p95, b.p95)} | ${f.p99} | ${b.p99} | ${(f.errorRate * 100).toFixed(2)}% | ${(b.errorRate * 100).toFixed(2)}% | ${issues.length ? '🔴' : '🟢'} |`;
-});
+const pctErr = (n) => `${(n * 100).toFixed(2)}%`;
+const icon = { ok: '🟢', regression: '🔴', new: '🆕' };
+const rows = results.map(({ flow, current: f, baseline: b, status }) =>
+  b
+    ? `| ${flow} | ${f.p95} | ${b.p95} | ${formatDelta(f.p95, b.p95)} | ${f.p99} | ${b.p99} | ${pctErr(f.errorRate)} | ${pctErr(b.errorRate)} | ${icon[status]} |`
+    : `| ${flow} | ${f.p95} | — | novo | ${f.p99} | — | ${pctErr(f.errorRate)} | — | ${icon[status]} |`,
+);
 
 report(
   [
     `### Regressão vs baseline — \`${profile}\``,
-    `Baseline: \`${baseline.meta.testId}\` · tolerância +${TOLERANCE * 100}% (piso ${NOISE_FLOOR_MS}ms) · erros +${ERROR_DELTA * 100}pp`,
+    `Baseline: \`${baseline.meta.testId}\` · tolerância +${opts.tolerance * 100}% (piso ${opts.noiseFloorMs}ms) · erros +${opts.errorDelta * 100}pp`,
     '',
     '| Fluxo | p95 atual | p95 base | Δ | p99 atual | p99 base | erros atual | erros base | |',
     '|---|--:|--:|--:|--:|--:|--:|--:|:-:|',
     ...rows,
     '',
-    regressions.length ? `**❌ Regressão detectada:** ${regressions.join(' · ')}` : '**✅ Sem regressão de performance.**',
+    regressions.length
+      ? `**❌ Regressão detectada:** ${regressions.map((r) => `${r.flow}: ${r.issues.join(', ')}`).join(' · ')}`
+      : '**✅ Sem regressão de performance.**',
   ].join('\n'),
 );
 
