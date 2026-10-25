@@ -74,6 +74,15 @@ npm run test:load && npm run baseline:update   # promove a execução atual a ba
 npm run test:load && npm run baseline:compare  # exit 1 se p95/p99 > +15% ou erros > +0,5 p.p.
 ```
 
+Fluxos com menos de 100 requisições ficam **fora do gate relativo** e aparecem como ⚪, porque um p95 de 8 amostras é ruído. Eles continuam protegidos pelos thresholds absolutos de SLO. A regra é coberta por testes unitários (`npm run test:unit`).
+
+| Variável | Padrão | Uso |
+|---|---|---|
+| `REGRESSION_TOLERANCE` | `0.15` | aumento máximo de p95/p99 |
+| `REGRESSION_NOISE_FLOOR_MS` | `15` | variação absoluta ignorada como ruído |
+| `REGRESSION_ERROR_DELTA` | `0.005` | aumento máximo da taxa de erro |
+| `REGRESSION_MIN_SAMPLES` | `100` | amostra mínima para comparar percentis |
+
 ### Provando que o gate funciona (chaos)
 
 ```bash
