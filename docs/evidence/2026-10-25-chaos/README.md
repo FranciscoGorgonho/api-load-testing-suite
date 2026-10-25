@@ -23,6 +23,11 @@ Comprovar que as duas camadas de gate **reprovam** uma API com degradação inje
 
 ## Achados
 
-1. **Mensagem ambígua no gate:** a nota diz `auth (n=8 < 100)`, mas a tabela mostra `n=9`. O n da mensagem vem da baseline (o menor dos dois), e a mensagem não informa de que lado veio.
-2. **O abort reduz a amostra do fluxo mais crítico:** o `abortOnFail` encerrou o teste cedo, e o checkout ficou com n=67, saindo do gate relativo (⚪). Ele continua reprovado pelo SLO absoluto, então não há falso negativo. Mesmo assim, o comportamento precisa ser documentado.
-3. **Layout:** no HTML, o selo "amostra baixa" desalinha a coluna Reqs.
+| # | Achado | Tratamento |
+|---|---|---|
+| 1 | **Mensagem ambígua no gate:** a nota dizia `auth (n=8 < 100)`, mas a tabela mostrava `n=9`. O n vinha da baseline (o menor dos dois), sem dizer de que lado. | ✅ Corrigido: a mensagem passa a mostrar `n atual=9, base=8 (mín. 100)`, com teste de regressão |
+| 2 | **O abort reduz a amostra do fluxo mais crítico:** o checkout ficou com n=67 após o `abortOnFail` e saiu do gate relativo. Não há falso negativo, porque o SLO absoluto já reprovou. | 📄 Documentado como consequência no [ADR 0002](../../adr/0002-slos-como-codigo.md) |
+| 3 | **Layout:** o selo "amostra baixa" desalinhava a coluna Reqs no HTML. | ✅ Corrigido: o selo foi movido para a coluna Fluxo |
+| 4 | **Observabilidade do mock:** o log de inicialização não indicava se o chaos estava ativo, e foi preciso medir a latência para confirmar. | ✅ Corrigido: o startup exibe `⚠ CHAOS ATIVO` |
+
+Os arquivos desta pasta são o registro da execução original e **não foram regenerados** depois das correções.
