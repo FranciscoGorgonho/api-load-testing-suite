@@ -2,12 +2,13 @@
 
 import type { CompactSummary, StageResult } from './summary.ts';
 import { KNEE_CRITERIA } from '../config/slos.ts';
-import { brl, pct } from './format.ts';
+import { brl, brlCompact, pct } from './format.ts';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 
 function kneeChart(stages: StageResult[], kneeStage?: number): string {
-  const W = 760, H = 260, pad = { l: 48, r: 48, t: 16, b: 32 };
+  // Margem direita comporta o rótulo do eixo de req/s (ex.: "533 req/s").
+  const W = 760, H = 260, pad = { l: 48, r: 72, t: 16, b: 32 };
   const iw = W - pad.l - pad.r, ih = H - pad.t - pad.b;
   const maxP95 = Math.max(KNEE_CRITERIA.p95 * 1.5, ...stages.map((s) => s.p95));
   const maxRps = Math.max(1, ...stages.map((s) => s.achievedReqPerS));
@@ -88,7 +89,7 @@ h1{font-size:22px;margin:0}h2{font-size:16px;margin:0 0 12px}.sub{color:var(--mu
 .badge{padding:6px 14px;border-radius:999px;font-weight:600;color:#fff}.badge.ok{background:var(--ok)}.badge.bad{background:var(--bad)}.badge.info{background:var(--info)}
 section{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;margin-bottom:16px;overflow-x:auto}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
-.kpi{border:1px solid var(--line);border-radius:10px;padding:12px}.kpi b{display:block;font-size:22px;font-variant-numeric:tabular-nums}.kpi span{color:var(--muted);font-size:12px}
+.kpi{border:1px solid var(--line);border-radius:10px;padding:12px}.kpi b{display:block;font-size:22px;white-space:nowrap;font-variant-numeric:tabular-nums}.kpi span{color:var(--muted);font-size:12px}
 table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:8px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--muted);font-weight:500;font-size:12px}
 .num{text-align:right;font-variant-numeric:tabular-nums}small{color:var(--muted)}.bad-t{color:var(--bad);font-weight:600}.row-bad td{color:var(--bad)}
 .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px}.dot.ok{background:var(--ok)}.dot.bad{background:var(--bad)}
@@ -109,8 +110,8 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:8px;borde
   <div class="kpi"><b>${pct(s.throughput.checksRate)}</b><span>checks funcionais</span></div>
   <div class="kpi"><b>${s.business.ordersConfirmed}</b><span>pedidos confirmados</span></div>
   <div class="kpi"><b>${pct(s.business.conversionRate)}</b><span>conversão sessão → pedido</span></div>
-  <div class="kpi"><b>${brl(s.business.revenueConfirmed)}</b><span>receita confirmada</span></div>
-  <div class="kpi"><b style="color:${s.business.revenueAtRisk > 0 ? 'var(--bad)' : 'inherit'}">${brl(s.business.revenueAtRisk)}</b><span>receita em risco</span></div>
+  <div class="kpi"><b title="${brl(s.business.revenueConfirmed)}">${brlCompact(s.business.revenueConfirmed)}</b><span>receita confirmada</span></div>
+  <div class="kpi"><b title="${brl(s.business.revenueAtRisk)}" style="color:${s.business.revenueAtRisk > 0 ? 'var(--bad)' : 'inherit'}">${brlCompact(s.business.revenueAtRisk)}</b><span>receita em risco</span></div>
 </div>
 ${s.throughput.droppedIterations ? `<p class="fails">⚠ ${s.throughput.droppedIterations} iterações descartadas: o gerador de carga não acompanhou a taxa alvo.</p>` : ''}
 ${s.failedThresholds.length ? `<p class="fails">Thresholds violados:<br>${s.failedThresholds.map(esc).join('<br>')}</p>` : ''}
