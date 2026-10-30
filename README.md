@@ -1,6 +1,17 @@
 # API Load Testing Suite · k6 + TypeScript
 
+[![performance](https://github.com/FranciscoGorgonho/api-load-testing-suite/actions/workflows/performance.yml/badge.svg?branch=main)](https://github.com/FranciscoGorgonho/api-load-testing-suite/actions/workflows/performance.yml)
+![k6](https://img.shields.io/badge/k6-2.2.0-7d64ff?logo=k6&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-nativo-3178c6?logo=typescript&logoColor=white)
+![Node](https://img.shields.io/badge/Node-%E2%89%A520-339933?logo=node.js&logoColor=white)
+
 Suíte de testes de performance para APIs de e-commerce que vai além do "rodar k6 e olhar o p95". Ela **transforma métricas em decisão**: diz se a release passa, onde o sistema quebra e **quanto dinheiro a lentidão custa**.
+
+<p align="center">
+  <img src="docs/images/relatorio-stress.png" alt="Relatório de estresse: veredito, KPIs de negócio, SLOs por fluxo com error budget e curva de ruptura por estágio" width="820">
+  <br>
+  <sub>Relatório gerado pelo teste de estresse: KPIs de negócio, SLOs com error budget e o <strong>ponto de ruptura detectado automaticamente</strong>.</sub>
+</p>
 
 ## O que torna esta suíte diferente
 
