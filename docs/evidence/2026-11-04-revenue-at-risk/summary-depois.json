@@ -1,0 +1,332 @@
+{
+  "meta": {
+    "testId": "bug-depois",
+    "profile": "stress",
+    "description": "Rampa em degraus até romper — encontra a capacidade máxima",
+    "env": "local",
+    "baseUrl": "http://localhost:3333",
+    "durationS": 192.1,
+    "generatedAt": "2026-11-04T23:33:49.434Z"
+  },
+  "verdict": "EXPLORATORY",
+  "failedThresholds": [],
+  "throughput": {
+      "reqPerS": 232.35,
+      "requests": 44631,
+      "iterations": 20408,
+      "droppedIterations": 0,
+      "checksRate": 0.2739
+    },
+  "flows": [
+      {
+        "flow": "browse",
+        "requests": 39328,
+        "failed": 29374,
+        "p95": 218.82,
+        "p99": 248.17,
+        "errorRate": 0.7469,
+        "slo": {
+          "p95": 400,
+          "p99": 800,
+          "maxErrorRate": 0.01
+        },
+        "pass": false,
+        "budgetConsumed": 74.69,
+        "lowSample": false
+      },
+      {
+        "flow": "auth",
+        "requests": 71,
+        "failed": 9,
+        "p95": 280.78,
+        "p99": 310.76,
+        "errorRate": 0.12676,
+        "slo": {
+          "p95": 600,
+          "p99": 1200,
+          "maxErrorRate": 0.005
+        },
+        "pass": false,
+        "budgetConsumed": 25.352,
+        "lowSample": true
+      },
+      {
+        "flow": "cart",
+        "requests": 4596,
+        "failed": 2709,
+        "p95": 216.88,
+        "p99": 241.98,
+        "errorRate": 0.58943,
+        "slo": {
+          "p95": 500,
+          "p99": 1000,
+          "maxErrorRate": 0.005
+        },
+        "pass": false,
+        "budgetConsumed": 117.885,
+        "lowSample": false
+      },
+      {
+        "flow": "checkout",
+        "requests": 635,
+        "failed": 427,
+        "p95": 325.17,
+        "p99": 352.5,
+        "errorRate": 0.67244,
+        "slo": {
+          "p95": 800,
+          "p99": 1500,
+          "maxErrorRate": 0.001,
+          "abortOnFail": true
+        },
+        "pass": false,
+        "budgetConsumed": 672.441,
+        "lowSample": false
+      }
+    ],
+  "endpoints": [
+      {
+        "name": "POST /orders",
+        "avg": 92.76,
+        "p95": 325.17,
+        "p99": 352.5,
+        "count": 635
+      },
+      {
+        "name": "POST /auth/login",
+        "avg": 173.69,
+        "p95": 280.78,
+        "p99": 310.76,
+        "count": 71
+      },
+      {
+        "name": "GET /search",
+        "avg": 48.11,
+        "p95": 230.64,
+        "p99": 258.12,
+        "count": 17347
+      },
+      {
+        "name": "POST /cart/{id}/items",
+        "avg": 138.09,
+        "p95": 230.57,
+        "p99": 251.94,
+        "count": 1544
+      },
+      {
+        "name": "GET /products",
+        "avg": 49.72,
+        "p95": 206.71,
+        "p99": 232.43,
+        "count": 17347
+      },
+      {
+        "name": "POST /cart",
+        "avg": 45.79,
+        "p95": 200.39,
+        "p99": 228.72,
+        "count": 3052
+      },
+      {
+        "name": "GET /products/{id}",
+        "avg": 51.18,
+        "p95": 198.55,
+        "p99": 224.07,
+        "count": 4634
+      }
+    ],
+  "business": {
+      "sessions": 20408,
+      "ordersConfirmed": 208,
+      "conversionRate": 0.0102,
+      "checkoutSuccessRate": 0.3276,
+      "revenueConfirmed": 258427.7,
+      "revenueAtRisk": 515652.3,
+      "journeyP95": 2406.3
+    },
+  "knee": {
+      "stages": [
+        {
+          "index": 1,
+          "durationS": 5,
+          "targetJourneysPerS": 20,
+          "achievedReqPerS": 31.6,
+          "p95": 128.98,
+          "errorRate": 0,
+          "healthy": true
+        },
+        {
+          "index": 2,
+          "durationS": 14,
+          "targetJourneysPerS": 20,
+          "achievedReqPerS": 62.86,
+          "p95": 240.62,
+          "errorRate": 0.0693,
+          "healthy": false
+        },
+        {
+          "index": 3,
+          "durationS": 5,
+          "targetJourneysPerS": 40,
+          "achievedReqPerS": 83.8,
+          "p95": 243.45,
+          "errorRate": 0.2363,
+          "healthy": false
+        },
+        {
+          "index": 4,
+          "durationS": 14,
+          "targetJourneysPerS": 40,
+          "achievedReqPerS": 109.36,
+          "p95": 236.09,
+          "errorRate": 0.4121,
+          "healthy": false
+        },
+        {
+          "index": 5,
+          "durationS": 5,
+          "targetJourneysPerS": 60,
+          "achievedReqPerS": 130.8,
+          "p95": 227.49,
+          "errorRate": 0.4908,
+          "healthy": false
+        },
+        {
+          "index": 6,
+          "durationS": 14,
+          "targetJourneysPerS": 60,
+          "achievedReqPerS": 150.07,
+          "p95": 225.23,
+          "errorRate": 0.565,
+          "healthy": false
+        },
+        {
+          "index": 7,
+          "durationS": 5,
+          "targetJourneysPerS": 80,
+          "achievedReqPerS": 163.2,
+          "p95": 224.98,
+          "errorRate": 0.6054,
+          "healthy": false
+        },
+        {
+          "index": 8,
+          "durationS": 14,
+          "targetJourneysPerS": 80,
+          "achievedReqPerS": 185.57,
+          "p95": 222.94,
+          "errorRate": 0.6517,
+          "healthy": false
+        },
+        {
+          "index": 9,
+          "durationS": 5,
+          "targetJourneysPerS": 100,
+          "achievedReqPerS": 201.8,
+          "p95": 237.33,
+          "errorRate": 0.6888,
+          "healthy": false
+        },
+        {
+          "index": 10,
+          "durationS": 14,
+          "targetJourneysPerS": 100,
+          "achievedReqPerS": 225.79,
+          "p95": 221.19,
+          "errorRate": 0.7115,
+          "healthy": false
+        },
+        {
+          "index": 11,
+          "durationS": 5,
+          "targetJourneysPerS": 120,
+          "achievedReqPerS": 236.4,
+          "p95": 223.7,
+          "errorRate": 0.7301,
+          "healthy": false
+        },
+        {
+          "index": 12,
+          "durationS": 14,
+          "targetJourneysPerS": 120,
+          "achievedReqPerS": 258.36,
+          "p95": 221.19,
+          "errorRate": 0.7534,
+          "healthy": false
+        },
+        {
+          "index": 13,
+          "durationS": 5,
+          "targetJourneysPerS": 140,
+          "achievedReqPerS": 273.2,
+          "p95": 224.72,
+          "errorRate": 0.7635,
+          "healthy": false
+        },
+        {
+          "index": 14,
+          "durationS": 14,
+          "targetJourneysPerS": 140,
+          "achievedReqPerS": 293.07,
+          "p95": 220.02,
+          "errorRate": 0.7826,
+          "healthy": false
+        },
+        {
+          "index": 15,
+          "durationS": 5,
+          "targetJourneysPerS": 160,
+          "achievedReqPerS": 315.4,
+          "p95": 213.85,
+          "errorRate": 0.792,
+          "healthy": false
+        },
+        {
+          "index": 16,
+          "durationS": 14,
+          "targetJourneysPerS": 160,
+          "achievedReqPerS": 334.14,
+          "p95": 214.28,
+          "errorRate": 0.8068,
+          "healthy": false
+        },
+        {
+          "index": 17,
+          "durationS": 5,
+          "targetJourneysPerS": 180,
+          "achievedReqPerS": 352,
+          "p95": 213.13,
+          "errorRate": 0.8136,
+          "healthy": false
+        },
+        {
+          "index": 18,
+          "durationS": 14,
+          "targetJourneysPerS": 180,
+          "achievedReqPerS": 369.86,
+          "p95": 215.73,
+          "errorRate": 0.8283,
+          "healthy": false
+        },
+        {
+          "index": 19,
+          "durationS": 5,
+          "targetJourneysPerS": 200,
+          "achievedReqPerS": 390.2,
+          "p95": 207.1,
+          "errorRate": 0.8309,
+          "healthy": false
+        },
+        {
+          "index": 20,
+          "durationS": 14,
+          "targetJourneysPerS": 200,
+          "achievedReqPerS": 420.79,
+          "p95": 208.52,
+          "errorRate": 0.8287,
+          "healthy": false
+        }
+      ],
+      "kneeStage": 2
+    }
+}

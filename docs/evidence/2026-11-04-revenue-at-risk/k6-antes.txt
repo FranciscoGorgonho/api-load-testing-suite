@@ -1,0 +1,17 @@
+
+═══ STRESS · local · 192s ═══  🔎 EXPLORATÓRIO
+Throughput: 232.15 req/s · 44578 reqs · checks 27.57%
+
+Fluxo       p95 (SLO)         p99 (SLO)          erros (SLO)       budget
+✗ browse    220.72ms (<400)   254.22ms (<800)    74.27% (<1.00%)   7427.10%
+✗ auth      276.74ms (<600)   306.23ms (<1200)   18.42% (<0.50%)   3684.20% ⚠ n=76: percentis pouco confiáveis
+✗ cart      217.13ms (<500)   244.5ms (<1000)    61.61% (<0.50%)   12321.20%
+✗ checkout  322.7ms (<800)    345.04ms (<1500)   75.71% (<0.10%)   75714.30%
+
+Negócio: 149 pedidos · conversão 0.73% · confirmado R$ 188.386,10 · em risco R$ 401.423,00
+
+Ponto de ruptura: estágio 2 · capacidade saudável ≈ 0 jornadas/s
+
+Relatório: results/stress-report.html
+avisos 'invalid value for metric': 222
+exemplo: "'undefined' is an invalid value for metric 'revenue_at_risk', a number or a boolean value is expected"
