@@ -1,0 +1,16 @@
+
+═══ STRESS · local · 192.1s ═══  🔎 EXPLORATÓRIO
+Throughput: 232.35 req/s · 44631 reqs · checks 27.39%
+
+Fluxo       p95 (SLO)         p99 (SLO)          erros (SLO)       budget
+✗ browse    218.82ms (<400)   248.17ms (<800)    74.69% (<1.00%)   7469.00%
+✗ auth      280.78ms (<600)   310.76ms (<1200)   12.68% (<0.50%)   2535.20% ⚠ n=71: percentis pouco confiáveis
+✗ cart      216.88ms (<500)   241.98ms (<1000)   58.94% (<0.50%)   11788.50%
+✗ checkout  325.17ms (<800)   352.5ms (<1500)    67.24% (<0.10%)   67244.10%
+
+Negócio: 208 pedidos · conversão 1.02% · confirmado R$ 258.427,70 · em risco R$ 515.652,30
+
+Ponto de ruptura: estágio 2 · capacidade saudável ≈ 0 jornadas/s
+
+Relatório: results/stress-report.html
+avisos 'invalid value for metric': 0

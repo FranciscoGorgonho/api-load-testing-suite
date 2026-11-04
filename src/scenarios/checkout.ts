@@ -32,9 +32,12 @@ export function checkoutJourneyScenario(api: ApiClient): void {
         token,
         body: { productId: 1 + Math.floor(Math.random() * PRODUCT_COUNT), quantity: 1 + Math.floor(Math.random() * 2) },
       });
-      const body = json<{ total: number }>(add);
-      check(add, { 'carrinho: item adicionado': (r) => r.status === 200 && typeof body?.total === 'number' });
-      if (body) cartTotal = body.total;
+      // Sob sobrecarga a API responde 503 com JSON de erro, sem `total`: só um
+      // total numérico atualiza o carrinho; caso contrário, vale o último conhecido.
+      const body = json<{ total?: unknown }>(add);
+      const added = add.status === 200 && typeof body?.total === 'number';
+      check(add, { 'carrinho: item adicionado': () => added });
+      if (added) cartTotal = body!.total as number;
     }
   });
   if (!cartId || cartTotal === 0) return;
