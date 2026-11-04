@@ -116,7 +116,7 @@ npm run test:load:grafana
 
 1. **Typecheck** em todo PR.
 2. **Smoke** em todo PR. Se o SLO for violado, o merge fica bloqueado.
-3. **Carga + regressão vs baseline** no `main`, todo dia útil (cron) ou sob demanda, com escolha de perfil.
+3. **Carga + regressão vs baseline** a cada merge na `main`, mensalmente no dia 1 (cron, para detectar *drift* sem mudança de código) ou sob demanda, com escolha de perfil.
 4. O relatório HTML e o JSON ficam salvos como artefatos, e a tabela de regressão aparece no *job summary*.
 
 ## Documentação
