@@ -5,7 +5,9 @@ on:
   push:
     branches: [main]
   schedule:
-    - cron: '0 6 * * 1-5' # dias úteis, 03:00 BRT
+    # Dia 1 de cada mês, 03:17 BRT. Minuto "quebrado" de propósito: agendamentos
+    # no minuto 0 concorrem com a fila global do GitHub e atrasavam de 6 a 9h.
+    - cron: '17 6 1 * *'
   workflow_dispatch:
     inputs:
       profile:
